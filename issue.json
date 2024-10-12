@@ -1,0 +1,302 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/revista-galo/json-schemas/main/issue.json",
+  "title": "issue.yaml",
+  "description": "An issue.yaml file can be used to describe metadata of a Revista Galo issue",
+  "definitions": {
+    "part-code": {
+      "title": "Part code that is used to generate the DOI of an article",
+      "description": "E. g. the second article is in the part `\"l\"`, it will have the `l2` suffix",
+      "oneOf": [
+        { "const": "e", "title": "editorial" },
+        { "const": "d", "title": "dossier" },
+        { "const": "l", "title": "free articles" },
+        { "const": "t", "title": "transcriptions" },
+        { "const": "i", "title": "iconographic analysis" },
+        { "const": "f", "title": "teaching practice" },
+        { "const": "q", "title": "research projects" },
+        { "const": "m", "title": "prose and/or poetry" },
+        { "const": "r", "title": "review" }
+      ]
+    },
+    "part": {
+      "title": "Part of an issue",
+      "description": "It can assume the enumerated values or have an arbitrary value",
+      "oneOf": [
+        {
+          "const": "editorial",
+          "title": "Editorial",
+          "description": "Editorial"
+        },
+        {
+          "const": "dossier",
+          "title": "Get title from theme property",
+          "description": "Dossiê"
+        },
+        {
+          "const": "free-articles",
+          "title": "Artigo(s) livre(s)",
+          "description": "Artigo(s) livre(s)"
+        },
+        {
+          "const": "transcriptions",
+          "title": "Transcrição(ões)",
+          "description": "Transcrição(ões)"
+        },
+        {
+          "const": "iconographic-analysis",
+          "title": "Análise(s) iconográfica(s)",
+          "description": "Análise(s) iconográfica(s)"
+        },
+        {
+          "const": "teaching-practice",
+          "title": "Prática(s) docente(s)",
+          "description": "Prática(s) docente(s)"
+        },
+        {
+          "const": "research-projects",
+          "title": "Projeto(s) de pesquisa",
+          "description": "Projeto(s) de pesquisa"
+        },
+        { "const": "poetry", "title": "Poesia", "description": "Poesia" },
+        { "const": "prose", "title": "Prosa", "description": "Prosa" },
+        {
+          "const": "prose-and-poetry",
+          "title": "Prosa & poesia",
+          "description": "Prosa & poesia"
+        },
+        {
+          "const": "review",
+          "title": "Resenha(s)",
+          "description": "Resenha(s)"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "pre": { "type": "string" },
+            "title": { "type": "string" },
+            "subtitle": { "type": "string" },
+            "part-code": { "$ref": "#/definitions/part-code" }
+          },
+          "additionalProperties": false,
+          "required": ["title"]
+        }
+      ]
+    },
+    "loose-article": {
+      "type": "object",
+      "properties": {
+        "path": { "type": "string" },
+        "part": { "$ref": "#/definitions/part" },
+        "page": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false,
+      "required": ["path", "part"]
+    },
+    "article": {
+      "type": "object",
+      "properties": {
+        "path": { "type": "string" },
+        "page": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false,
+      "required": ["path"]
+    },
+    "articles": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "$ref": "#/definitions/loose-article" },
+          "minItems": 1
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "part": { "$ref": "#/definitions/part" },
+              "articles": {
+                "type": "array",
+                "items": { "$ref": "#/definitions/article" },
+                "minItems": 1
+              }
+            },
+            "required": ["part", "articles"]
+          },
+          "minItems": 1
+        }
+      ]
+    },
+    "issn": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{4}$"
+    },
+    "doi-prefix": {
+      "title": "A DOI prefix",
+      "description": "A string that always starts with \"10.\" and continues with a number (e.g. \"10.1234\" or \"10.20865\")",
+      "$comment": "https://en.wikipedia.org/wiki/Digital_object_identifier",
+      "type": "string",
+      "pattern": "^10\\.[0-9]+$"
+    },
+    "semester": {
+      "oneOf": [{ "const": "jan./jun." }, { "const": "jul./dez." }]
+    },
+    "name": {
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "properties": {
+            "family": { "type": "string" },
+            "given": { "type": "string" }
+          },
+          "additionalProperties": false,
+          "required": ["family", "given"]
+        }
+      ]
+    },
+    "name-or-list": {
+      "oneOf": [
+        { "$ref": "#/definitions/name" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/definitions/name" },
+          "minItems": 1
+        }
+      ]
+    }
+  },
+  "properties": {
+    "issn": {
+      "oneOf": [
+        { "$ref": "#/definitions/issn" },
+        {
+          "type": "object",
+          "properties": {
+            "physical": { "$ref": "#/definitions/issn" },
+            "electronic": { "$ref": "#/definitions/issn" }
+          },
+          "anyOf": [
+            { "required": ["physical"] },
+            { "required": ["electronic"] }
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "doi-prefix": { "$ref": "#/definitions/doi-prefix" },
+    "number": { "type": "integer", "minimum": 1 },
+    "semester": {
+      "$ref": "#/definitions/semester",
+      "title": "Semester of publishing",
+      "description": "Either \"jan./jun.\" or \"jul./dez.\""
+    },
+    "year": {
+      "title": "Year",
+      "description": "Year of publishing",
+      "type": "integer"
+    },
+    "cdd": {
+      "title": "CDD",
+      "description": "The CDD of the issue",
+      "$comment": "https://en.wikipedia.org/wiki/Dewey_Decimal_Classification",
+      "type": "string",
+      "pattern": "^[0-9]{3}(\\.[0-9]+)?$"
+    },
+    "theme": {
+      "title": "Issue theme or title",
+      "description": "A string or an object with a \"title\" and optionally a \"subtitle\"",
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "properties": {
+            "title": { "type": "string" },
+            "subtitle": { "type": "string" }
+          },
+          "required": ["title"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "organizer": {
+      "title": "Organizer(s)",
+      "description": "Who organize the issue",
+      "$ref": "#/definitions/name-or-list"
+    },
+    "editor": {
+      "title": "Editor(s)",
+      "description": "Who edit the issue",
+      "$ref": "#/definitions/name-or-list"
+    },
+    "cover": {
+      "title": "Cover",
+      "description": "Cover information",
+      "type": "object",
+      "properties": {
+        "author": {
+          "$ref": "#/definitions/name-or-list",
+          "title": "Cover creator",
+          "description": "Who create the cover"
+        },
+        "credits": {
+          "type": "string",
+          "title": "Cover credits",
+          "description": "References about images used on cover"
+        },
+        "path": {
+          "type": "string",
+          "title": "Cover path",
+          "description": "Path to cover file"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["path"]
+    },
+    "spine": {
+      "title": "Issue spine",
+      "description": "Contains front matter, book matter and back matter",
+      "type": "object",
+      "properties": {
+        "frontmatter": {
+          "$ref": "#/definitions/articles",
+          "title": "Front matter",
+          "description": "Editorial"
+        },
+        "bookmatter": {
+          "title": "Book matter",
+          "description": "Dossier, free articles, etc",
+          "$ref": "#/definitions/articles"
+        },
+        "backmatter": {
+          "title": "Back matter",
+          "description": "Technical sheet, appendices, etc.",
+          "type": "array",
+          "items": { "$ref": "#/definitions/article" }
+        }
+      },
+      "required": ["bookmatter"]
+    },
+    "keywords": {
+      "description": "Keywords for this issue",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "issn",
+    "number",
+    "semester",
+    "year",
+    "cdd",
+    "theme",
+    "organizer",
+    "editor",
+    "spine",
+    "keywords"
+  ],
+  "type": "object"
+}
