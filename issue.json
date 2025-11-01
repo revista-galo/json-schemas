@@ -16,7 +16,8 @@
         { "const": "f", "title": "teaching practice" },
         { "const": "q", "title": "research projects" },
         { "const": "m", "title": "prose and/or poetry" },
-        { "const": "r", "title": "review" }
+        { "const": "r", "title": "review" },
+        { "const": "v", "title": "interview" }
       ]
     },
     "part": {
@@ -69,6 +70,11 @@
           "const": "review",
           "title": "Resenha(s)",
           "description": "Resenha(s)"
+        },
+        {
+          "const": "interview",
+          "title": "Entrevista",
+          "description": "Entrevista"
         },
         {
           "type": "object",
