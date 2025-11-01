@@ -248,6 +248,11 @@
           "type": "string",
           "title": "Cover path",
           "description": "Path to cover file"
+        },
+        "orientation": {
+          "title": "Cover page orientation",
+          "description": "Cover page orientation",
+          "enum": ["portrait", "landscape"]
         }
       },
       "additionalProperties": false,
